@@ -236,10 +236,14 @@ class Bloomin8PullView(HomeAssistantView):
             os.makedirs(publish_dir, exist_ok=True)
 
             # We publish a stable filename to keep the device simple:
-            # "current" + original extension, e.g. current.png
-            basename, ext = os.path.splitext(chosen)
+            # iso timestamp + original extension, e.g. current.png, because 
+            # the frame seems to not reload an image when it is already cached
+            _, ext = os.path.splitext(chosen)
             ext = ext.lower() if ext else ".jpg"
-            published_name = f"{basename}_{orientation}{ext}"
+
+            timestamp = dt_util.now().strftime("%Y-%m-%d-%H-%M-%S")
+            published_name = f"{timestamp}_{device_id}_{orientation}{ext}"
+
             dst_path = os.path.join(publish_dir, published_name)
 
             # Copy is safest across filesystems; very small overhead for e-ink cadence.

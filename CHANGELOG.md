@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.16] - 2026-06-21
+
+### Changed
+- Fixed an issue where some BLOOMIN8 devices could fail to refresh images when identical published filenames were reused. Images are now published using a timestamp-based filename to ensure reliable refresh behaviour.
+
 ## [0.1.15] - 2026-05-11
 
 ### Changed
