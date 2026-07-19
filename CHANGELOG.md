@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.17] - 2026-07-19
+
+### Added
+- "X-Server-Timestamp" header sends the server time as Unix timestamp so that the frame can use it
+
 ## [0.1.16] - 2026-06-21
 
 ### Changed

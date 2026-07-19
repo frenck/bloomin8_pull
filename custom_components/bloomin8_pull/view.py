@@ -136,6 +136,29 @@ _LOGGER = logging.getLogger(__name__)
 ALLOWED_EXT = (".jpg",)
 
 
+def _server_timestamp() -> str:
+    """Return the current UTC time as a Unix timestamp in seconds."""
+    return str(int(dt.now(timezone.utc).timestamp()))
+
+
+def json_response_with_timestamp(
+    data: dict,
+    *,
+    status: int = HTTPStatus.OK,
+    **kwargs,
+) -> web.Response:
+    """Create a JSON response including the BLOOMIN8 clock-sync header."""
+    headers = dict(kwargs.pop("headers", {}) or {})
+    headers["X-Server-Timestamp"] = _server_timestamp()
+
+    return web.json_response(
+        data,
+        status=status,
+        headers=headers,
+        **kwargs,
+    )
+
+
 class Bloomin8PullView(HomeAssistantView):
     """Implements GET /eink_pull for BLOOMIN8 devices."""
 
@@ -152,7 +175,7 @@ class Bloomin8PullView(HomeAssistantView):
         token = request.headers.get("X-Access-Token", "")
         expected = self.cfg["access_token"]
         if not expected or token != expected:
-            return web.json_response(
+            return json_response_with_timestamp(
                 {"status": 401, "type": "ERROR", "message": "Unauthorized"},
                 status=HTTPStatus.UNAUTHORIZED,
             )
@@ -213,7 +236,7 @@ class Bloomin8PullView(HomeAssistantView):
             files = []
 
         if not files:
-            return web.json_response(
+            return json_response_with_timestamp(
                 {
                     "status": 204,
                     "message": "No image available",
@@ -253,7 +276,7 @@ class Bloomin8PullView(HomeAssistantView):
                 )
             except Exception as err:
                 _LOGGER.exception("Failed to publish image %s -> %s: %s", src_path, dst_path, err)
-                return web.json_response(
+                return json_response_with_timestamp(
                     {"status": 500, "type": "ERROR", "message": "Failed to publish image"},
                     status=HTTPStatus.INTERNAL_SERVER_ERROR,
                 )
@@ -283,7 +306,7 @@ class Bloomin8PullView(HomeAssistantView):
         except Exception:
             pass        
 
-        return web.json_response(
+        return json_response_with_timestamp(
             {
                 "status": 200,
                 "type": "SHOW",
@@ -312,7 +335,7 @@ class Bloomin8SignalView(HomeAssistantView):
         token = request.headers.get("X-Access-Token", "")
         expected = self.cfg["access_token"]
         if not expected or token != expected:
-            return web.json_response(
+            return json_response_with_timestamp(
                 {"status": 401, "type": "ERROR", "message": "Unauthorized"},
                 status=HTTPStatus.UNAUTHORIZED,
             )
@@ -352,7 +375,7 @@ class Bloomin8SignalView(HomeAssistantView):
             pull_id, success, request.remote
         )
 
-        return web.json_response(
+        return json_response_with_timestamp(
             {
                 "status": 200,
                 "message": "Feedback recorded"

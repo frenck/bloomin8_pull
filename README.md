@@ -100,7 +100,13 @@ Content-Type: application/json
 }
 ```
 
-For IP-AND-PORT-OF-HOME-ASSISTANT, for example, http://192.168.0.1:8123. The framework then automatically appends the path to the pull service.
+On Windows cmd it looks like this:
+
+```bash
+curl -X PUT "http://{device_ip}/upstream/pull_settings" -H "Content-Type: application/json" -d "{\"upstream_on\":true,\"upstream_url\":\"http://<IP-AND-PORT-OF-HOME-ASSISTANT>\",\"token\":\"<YOUR_TOKEN_HERE>\",\"cron_time\":\"2025-11-01T08:30:00Z\"}"
+```
+
+Use for IP-AND-PORT-OF-HOME-ASSISTANT, for example, http://192.168.0.1:8123. The framework then automatically appends the path to the pull service.
 
 ## Testing
 
