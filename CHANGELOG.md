@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.2] - 2026-09-26
+
+### Changed
+- Prefixed per-device entity names with `BLOOMIN8 Pull` so newly created Home Assistant entity IDs use the `bloomin8_pull_...` namespace.
+- This avoids collisions with similarly named entities from the official BLOOMIN8 integration.
+
+## [0.2.1] - 2026-09-26
+
+### Fixed
+- Removed YAML-platform entity-to-device attachment that caused Home Assistant to warn that an entity was being attached to a device without a Config Entry.
+- Included the configured BLOOMIN8 device name directly in each entity name instead.
+- Keeps the integration compatible with its current YAML-based setup while avoiding a Home Assistant 2027.8 deprecation path.
+
+## [0.2.0] - 2026-09-26
+
+### Added - BREAKING CHANGE
+- Added first-class support for multiple BLOOMIN8 frames.
+- Added mandatory `devices:` configuration keyed by each frame's actual `device_id`.
+- Added per-device `name`, `orientation`, and `wake_up_hours` settings.
+- Added independent per-device state for battery, last pull result, last seen timestamp, pull enabled state, and last image URL.
+- Added one battery sensor, pull-success binary sensor, and pull-enabled switch per configured device.
+- Added per-device recent-image history to avoid repetitions independently on each frame.
+- Added persistent `pull_id` -> `device_id` mapping so `/eink_signal` updates the frame that initiated the corresponding pull.
+- Outstanding pull mappings are persisted and expire after 24 hours.
+- Added rejection of unknown `device_id` values with HTTP 400.
+- Added automatic migration of the legacy 0.1.x state file to the first configured device.
+
+### Changed - BREAKING CHANGE
+- `wake_up_hours` and `orientation` moved from global configuration to each entry under `devices:`.
+- `image_dir` is now treated as a root directory containing `portrait/` and `landscape/` subdirectories.
+- Image selection uses the subdirectory matching each device's configured orientation (`P` -> `portrait`, `L` -> `landscape`).
+- Published images are now stored below a per-device subdirectory under `publish_dir`, preventing one frame from deleting another frame's image during overlapping pulls.
+- Pull enable/disable state is now per device instead of global.
+- Recent-image history is now stored per device instead of globally.
+- Entity unique IDs are now derived from the BLOOMIN8 `device_id`.
+
+### Migration notes
+- Existing YAML using global `wake_up_hours` and `orientation` must be converted to the new `devices:` structure.
+- Existing image pools must be moved into `portrait/` and/or `landscape/` below `image_dir`.
+- Existing 0.1.x entities may remain as orphaned Entity Registry entries and can be removed after verifying the new entities.
+- The old global recent-image history is not migrated automatically. A new per-device history is created on first use.
+
 ## [0.1.17] - 2026-07-19
 
 ### Added
